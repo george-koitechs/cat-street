@@ -2,6 +2,7 @@ import { HeadFC, Link, PageProps, graphql } from 'gatsby'
 
 import * as React from 'react'
 
+import { Card, CardContent, Typography } from '@mui/material'
 import { motion } from 'framer-motion'
 
 import { Layout } from '../components'
@@ -14,26 +15,25 @@ const IndexPage: React.FC<PageProps<IProductsQuery>> = ({ data }) => {
     <Layout>
       <main className={styles.main}>
         <h1 className={styles.title}>
-          <span className={styles.highlight}>But now</span> and have a great time forever :)
+          <span className={styles.highlight}>Buy now</span> and have a great time forever :)
         </h1>
         <div className={styles.productsList}>
           {data.allProduct.nodes.map((product) => {
             const publicImg = product.image.publicURL
             const image = product.images[0].file
             return (
-              <Link to={`/products/${product.slug}`} className={styles.product} key={product.id}>
-                <motion.img
-                  src={publicImg}
-                  style={{
-                    aspectRatio: (image.width / image.height).toString(),
-                  }}
-                />
+              <Link to={`/products/${product.slug}`} key={product.id}>
+                <Card className={styles.card}>
+                  <CardContent sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                    <motion.img src={publicImg} style={{ aspectRatio: (image.width / image.height).toString() }} />
 
-                <h3>{product.name}</h3>
-                <p>
-                  {product.price}
-                  {product.currency}
-                </p>
+                    <Typography sx={{ mt: 'auto' }}>{product.name}</Typography>
+                    <p>
+                      {product.price}
+                      {product.currency}
+                    </p>
+                  </CardContent>
+                </Card>
               </Link>
             )
           })}

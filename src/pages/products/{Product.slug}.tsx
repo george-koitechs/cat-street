@@ -2,6 +2,7 @@ import { PageProps, graphql } from 'gatsby'
 
 import { useReducer } from 'react'
 
+import { Button } from '@mui/material'
 import { motion } from 'framer-motion'
 import { BsCartPlus } from 'react-icons/bs'
 import { MdSell } from 'react-icons/md'
@@ -22,26 +23,26 @@ function ProductPage({ data }: PageProps<{ product: IProduct }>) {
             key={index}
           />
           <div className={styles.imagesCarousel}>
-            <button onClick={() => changeIndex(-1)} disabled={index === 0}>
+            <Button variant='outlined' onClick={() => changeIndex(-1)} disabled={index === 0}>
               Previous
-            </button>
-            <button onClick={() => changeIndex(1)} disabled={index === data.product.images.length - 1}>
+            </Button>
+            <Button
+              variant='outlined'
+              onClick={() => changeIndex(1)}
+              disabled={index === data.product.images.length - 1}
+            >
               Next
-            </button>
+            </Button>
           </div>
         </figure>
         <main>
           <h1 className={styles.title}>{data.product.name}</h1>
           <div className={styles.price}>{data.product.price + data.product.currency}</div>
           <div className={styles.actions}>
-            <button className={styles.buy}>
-              <MdSell />
-              <span>Buy Now</span>
-            </button>
-            <button className={styles.addToCart}>
-              <BsCartPlus />
-              <span>Add to cart</span>
-            </button>
+            <Button startIcon={<MdSell />} variant='contained'>
+              Buy Now
+            </Button>
+            <Button startIcon={<BsCartPlus />}>Add to cart</Button>
           </div>
           <div className={styles.separator} />
 

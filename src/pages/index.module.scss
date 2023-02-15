@@ -1,6 +1,5 @@
 .main {
-  padding: 64px 16px;
-  padding-bottom: 128px;
+  padding: 64px 16px 128px;
 
   .title {
     font-weight: 900;
@@ -22,39 +21,14 @@
 
   .productsList {
     display: grid;
-    column-gap: 32px;
-    row-gap: 32px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 350px));
+    gap: 32px;
 
-    @media (min-width: 768px) {
-      grid-template-columns: repeat(2, 1fr);
-    }
-    @media (min-width: 1024px) {
-      grid-template-columns: repeat(3, 1fr);
-    }
-    @media (min-width: 1200px) {
-      grid-template-columns: repeat(4, 1fr);
-    }
-
-    .product {
-      overflow: hidden;
-
-      img {
-        width: 100%;
-        border-radius: 12px;
-      }
-
-      h3 {
-        margin-top: 16px;
-        font-size: 14px;
-        color: var(--color-gray-700);
-      }
-
-      p {
-        margin-top: 4px;
-        font-size: 18px;
-        font-weight: 500;
-        color: var(--color-gray-900);
-      }
+  }
+  .card {
+    height: 100%;
+    &:hover {
+      box-shadow: 0 2px 15px 0 rgb(0 0 0 / 20%);
     }
   }
 }
