@@ -1,4 +1,4 @@
-import { Link, PageProps, graphql } from 'gatsby'
+import { HeadFC, Link, PageProps, graphql } from 'gatsby'
 
 import * as React from 'react'
 
@@ -14,23 +14,14 @@ const IndexPage: React.FC<PageProps<IProductsQuery>> = ({ data }) => {
     <Layout>
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Ink Your Ideas with Style - Shop{' '}
-          <span className={styles.highlight}>The Best Pens</span> Online!
+          Ink Your Ideas with Style - Shop <span className={styles.highlight}>The Best Pens</span> Online!
         </h1>
         <div className={styles.productsList}>
-          {[
-            ...data.allProduct.nodes,
-            ...[...data.allProduct.nodes].reverse(),
-            ...data.allProduct.nodes,
-          ].map((product) => {
+          {data.allProduct.nodes.map((product) => {
             const publicImg = product.image.publicURL
             const image = product.images[0].file
             return (
-              <Link
-                to={`/products/${product.slug}`}
-                className={styles.product}
-                key={product.id}
-              >
+              <Link to={`/products/${product.slug}`} className={styles.product} key={product.id}>
                 <motion.img
                   src={publicImg}
                   style={{
@@ -82,3 +73,5 @@ export const query = graphql`
   }
 `
 export default IndexPage
+
+export const Head: HeadFC = () => <title>Home | Cats Street</title>

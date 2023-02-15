@@ -10,10 +10,7 @@ import { Layout } from '../../components'
 import * as styles from './product.module.scss'
 
 function ProductPage({ data }: PageProps<{ product: IProduct }>) {
-  const [index, changeIndex] = useReducer(
-    (c: number, offset: number) => (c + offset) % data.product.images.length,
-    0
-  )
+  const [index, changeIndex] = useReducer((c: number, offset: number) => (c + offset) % data.product.images.length, 0)
   return (
     <Layout>
       <div className={styles.container}>
@@ -28,19 +25,14 @@ function ProductPage({ data }: PageProps<{ product: IProduct }>) {
             <button onClick={() => changeIndex(-1)} disabled={index === 0}>
               Previous
             </button>
-            <button
-              onClick={() => changeIndex(1)}
-              disabled={index === data.product.images.length - 1}
-            >
+            <button onClick={() => changeIndex(1)} disabled={index === data.product.images.length - 1}>
               Next
             </button>
           </div>
         </figure>
         <main>
           <h1 className={styles.title}>{data.product.name}</h1>
-          <div className={styles.price}>
-            {data.product.price + data.product.currency}
-          </div>
+          <div className={styles.price}>{data.product.price + data.product.currency}</div>
           <div className={styles.actions}>
             <button className={styles.buy}>
               <MdSell />
@@ -53,10 +45,7 @@ function ProductPage({ data }: PageProps<{ product: IProduct }>) {
           </div>
           <div className={styles.separator} />
 
-          <div
-            className={styles.description}
-            dangerouslySetInnerHTML={{ __html: data.product.description }}
-          ></div>
+          <div className={styles.description} dangerouslySetInnerHTML={{ __html: data.product.description }}></div>
         </main>
       </div>
     </Layout>
@@ -96,3 +85,11 @@ export const query = graphql`
 `
 
 export default ProductPage
+
+export const Head: ({ data }: { data: { product: IProduct } }) => JSX.Element = ({
+  data,
+}: {
+  data: { product: IProduct }
+}) => {
+  return <title>{data.product.name} | Cats Street</title>
+}
