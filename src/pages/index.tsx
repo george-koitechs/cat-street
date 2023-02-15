@@ -2,6 +2,8 @@ import { Link, PageProps, graphql } from 'gatsby'
 
 import * as React from 'react'
 
+import { motion } from 'framer-motion'
+
 import { Layout } from '../components'
 import * as styles from './index.module.scss'
 
@@ -21,6 +23,7 @@ const IndexPage: React.FC<PageProps<IProductsQuery>> = ({ data }) => {
             ...[...data.allProduct.nodes].reverse(),
             ...data.allProduct.nodes,
           ].map((product) => {
+            const publicImg = product.image.publicURL
             const image = product.images[0].file
             return (
               <Link
@@ -28,8 +31,8 @@ const IndexPage: React.FC<PageProps<IProductsQuery>> = ({ data }) => {
                 className={styles.product}
                 key={product.id}
               >
-                <img
-                  src={image.url}
+                <motion.img
+                  src={publicImg}
                   style={{
                     aspectRatio: (image.width / image.height).toString(),
                   }}
@@ -56,6 +59,13 @@ export const query = graphql`
         id
         currency
         name
+        image {
+          id
+          publicURL
+          childImageSharp {
+            gatsbyImageData(width: 350, formats: [AUTO, WEBP, AVIF])
+          }
+        }
         images {
           id
           file {

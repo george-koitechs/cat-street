@@ -25,11 +25,13 @@ declare global {
     date_updated: Date
     delivery: string
     name: string
+    description: string
     images: Image[]
     price: number
     slug: string
     type: string
     attributes: Attributes
+    image: { id: string; publicURL: string }
   }
 }
 export {}
