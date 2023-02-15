@@ -1,10 +1,7 @@
 const swell = require('swell-node')
 const { createRemoteFileNode } = require(`gatsby-source-filesystem`)
 
-const store = swell.createClient(
-  'test-swell-akrm',
-  'J3nodio7Ceytizqo1lMeTX1jUgB7e2XA'
-)
+const store = swell.createClient('koi-test', '83NMEz9DQ6tVzqv3hMHpRwtHwGYpQCdW')
 
 const PRODUCT_NODE_TYPE = 'Product'
 
@@ -28,8 +25,6 @@ exports.sourceNodes = async ({
       },
     })
   )
-
-  return
 }
 
 async function createImage(createNodeField, node, config, index) {
