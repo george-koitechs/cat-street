@@ -21,7 +21,7 @@ const config: GatsbyConfig = {
       resolve: 'gatsby-source-filesystem',
       options: {
         name: 'images',
-        path: './src/images/',
+        path: './src/assets/images/',
       },
       __key: 'images',
     },
@@ -29,10 +29,7 @@ const config: GatsbyConfig = {
       resolve: `gatsby-omni-font-loader`,
       options: {
         enableListener: true,
-        preconnect: [
-          `https://fonts.googleapis.com`,
-          `https://fonts.gstatic.com`,
-        ],
+        preconnect: [`https://fonts.googleapis.com`, `https://fonts.gstatic.com`],
         web: [
           {
             name: `Inter`,

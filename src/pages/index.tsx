@@ -14,7 +14,7 @@ const IndexPage: React.FC<PageProps<IProductsQuery>> = ({ data }) => {
     <Layout>
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Ink Your Ideas with Style - Shop <span className={styles.highlight}>The Best Pens</span> Online!
+          <span className={styles.highlight}>But now</span> and have a great time forever :)
         </h1>
         <div className={styles.productsList}>
           {data.allProduct.nodes.map((product) => {

@@ -10,6 +10,7 @@
   figure {
     img {
       width: 100%;
+      object-fit: contain;
       aspect-ratio: 1;
       border-radius: 12px;
     }
@@ -86,7 +87,7 @@
         font-weight: bold;
       }
       * {
-        font-family: Inter !important;
+        font-family: 'Inter',sans-serif !important;
       }
     }
   }
