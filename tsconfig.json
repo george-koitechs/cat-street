@@ -109,6 +109,7 @@
     "gatssby-nodse.ts",
     "./gatsby-config.ts",
     "src/types/global.d.ts",
-    "./plugins/**/*"
+    "./plugins/**/*",
+    "gatsby-node.ts"
   ]
 }
