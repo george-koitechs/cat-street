@@ -1,22 +1,20 @@
 const swell = require('swell-node')
 const { createRemoteFileNode } = require(`gatsby-source-filesystem`)
 
-const store = swell.createClient('koi-test', '83NMEz9DQ6tVzqv3hMHpRwtHwGYpQCdW')
+const store = swell.createClient('koi-test', '83NMEz9DQ6tVzqv3hMHpRwtHwGYpQCdW', {
+  useCamelCase: true,
+})
 
 const PRODUCT_NODE_TYPE = 'Product'
 
-exports.sourceNodes = async ({
-  actions,
-  createContentDigest,
-  createNodeId,
-}) => {
+exports.sourceNodes = async ({ actions, createContentDigest }) => {
   const { createNode } = actions
   const data = await store.get('/products')
+  console.log('data', data)
 
-  data.results.forEach((product) =>
-    createNode({
+  data.results.forEach((product) => {
+    return createNode({
       ...product,
-      id: createNodeId(`${PRODUCT_NODE_TYPE}-${product.id}`),
       parent: null,
       children: [],
       internal: {
@@ -24,10 +22,10 @@ exports.sourceNodes = async ({
         contentDigest: createContentDigest(product),
       },
     })
-  )
+  })
 }
 
-async function createImage(createNodeField, node, config, index) {
+async function createImage(createNodeField, node, config) {
   const fileNode = await createRemoteFileNode(config)
   if (fileNode) {
     createNodeField({ node, name: 'image', value: fileNode.id })

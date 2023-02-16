@@ -1,0 +1,56 @@
+@use '../../../assets/styles/variables' as *;
+
+.input {
+  position: relative;
+  width: 100%;
+  display: flex;
+  gap: 10px;
+  border-bottom: 1px solid #282828;
+}
+.input__before {
+  width: 100%;
+}
+.input__input {
+  background-color: transparent;
+  border: none;
+  width: 100%;
+  border-radius: 0;
+  color: #424141;
+  font-weight: 300;
+  font-size: 25px;
+  outline: none;
+  padding: 5px 5px 0;
+  transition: background-color 0.2s ease-in;
+}
+.input__input_error {
+  border-color: red;
+}
+.input__label {
+  color: #424141;
+  font-size: 25px;
+  font-weight: 300;
+  top: 0;
+  position: absolute;
+  transition: all 0.2s ease-in-out;
+  user-select: none;
+  white-space: nowrap;
+}
+.input__label_withBefore {
+  top: 5px;
+}
+.input__label_error {
+  color: red;
+}
+.input__input:focus + .input__label,
+.input__input_active + .input__label {
+  color: #606060;
+  cursor: text;
+  font-size: 20px;
+  top: 42px;
+  &.input__label_error {
+    color: red;
+  }
+  &.input__label_withBefore {
+    top: 47px;
+  }
+}

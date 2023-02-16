@@ -1,17 +1,43 @@
 import { PageProps, graphql } from 'gatsby'
 
-import { useReducer } from 'react'
+import { useReducer, useState } from 'react'
 
 import { Button } from '@mui/material'
 import { motion } from 'framer-motion'
 import { BsCartPlus } from 'react-icons/bs'
 import { MdSell } from 'react-icons/md'
+import swell from 'swell-js'
+import { OptionValueSnake } from 'swell-js/types/product/snake'
+import { shallow } from 'zustand/shallow'
 
 import { Layout } from '../../components'
+import { useCartStore } from '../../components/cart/cart.store'
 import * as styles from './product.module.scss'
 
 function ProductPage({ data }: PageProps<{ product: IProduct }>) {
   const [index, changeIndex] = useReducer((c: number, offset: number) => (c + offset) % data.product.images.length, 0)
+  const [openCart, setCart] = useCartStore((state) => [state.open, state.setCart], shallow)
+  const [selectedOption, setSelectedOption] = useState<null | { optionValue: OptionValueSnake; optionName: string }>(
+    null
+  )
+
+  async function addToCart() {
+    const cartData = await swell.cart.addItem({
+      product_id: data.product.id,
+      quantity: 1,
+      options: [{ name: selectedOption?.optionName, value: selectedOption?.optionValue.name }],
+    })
+    setCart(cartData)
+    openCart()
+  }
+
+  function selectOption(optionValue: OptionValueSnake, optionName?: string) {
+    if (!optionName) return
+    setSelectedOption({ optionValue, optionName })
+  }
+
+  const finalPrice = data.product.price + (selectedOption?.optionValue.price ?? 0)
+
   return (
     <Layout>
       <div className={styles.container}>
@@ -37,12 +63,45 @@ function ProductPage({ data }: PageProps<{ product: IProduct }>) {
         </figure>
         <main>
           <h1 className={styles.title}>{data.product.name}</h1>
-          <div className={styles.price}>{data.product.price + data.product.currency}</div>
+          <div className={styles.price}>{finalPrice + data.product.currency}</div>
+
+          {data.product.options
+            ?.filter((o) => o.active)
+            .map((option) => {
+              return (
+                <div key={option.id} className={styles.productItem__option}>
+                  <p className={styles.productItem__optionName}>{option.name}:</p>
+                  {option.values?.map((optionValue) => {
+                    return (
+                      <Button
+                        key={optionValue.id}
+                        variant={optionValue.id === selectedOption?.optionValue.id ? 'contained' : 'outlined'}
+                        onClick={() => selectOption(optionValue, option.id)}
+                      >
+                        {optionValue.name} {!!optionValue.price && `(+${optionValue.price}${data.product.currency})`}
+                      </Button>
+                    )
+                  })}
+                </div>
+              )
+            })}
+
           <div className={styles.actions}>
-            <Button startIcon={<MdSell />} variant='contained'>
+            <Button
+              startIcon={<MdSell />}
+              variant='contained'
+              onClick={addToCart}
+              disabled={!selectedOption || !data.product.options?.length}
+            >
               Buy Now
             </Button>
-            <Button startIcon={<BsCartPlus />}>Add to cart</Button>
+            <Button
+              startIcon={<BsCartPlus />}
+              onClick={addToCart}
+              disabled={!selectedOption || !data.product.options?.length}
+            >
+              Add to cart
+            </Button>
           </div>
           <div className={styles.separator} />
 
@@ -64,6 +123,24 @@ export const query = graphql`
       delivery
       name
       description
+      attributes {
+        color
+        size
+      }
+      options {
+        active
+        attribute_id
+        id
+        input_type
+        name
+        required
+        variant
+        values {
+          id
+          name
+          price
+        }
+      }
       image {
         childImageSharp {
           gatsbyImageData(width: 350, formats: [AUTO, WEBP, AVIF])

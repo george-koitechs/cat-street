@@ -51,3 +51,12 @@
     }
   }
 }
+.productItem__option {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 20px;
+}
+.productItem__optionName {
+  font-weight: 700;
+}

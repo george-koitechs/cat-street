@@ -1,0 +1,47 @@
+@use '../../../assets/styles/variables' as *;
+
+.textarea {
+  position: relative;
+  width: 100%;
+}
+.textarea__textarea {
+  font-family: $Neue;
+  resize: none;
+  background-color: transparent;
+  border: none;
+  width: 100%;
+  border-bottom: 1px solid #282828;
+  border-radius: 0;
+  color: #424141;
+  font-weight: 300;
+  font-size: 25px;
+  outline: none;
+  padding: 5px;
+  transition: background-color 0.2s ease-in;
+}
+.textarea__textarea_error {
+  border-color: red;
+}
+.textarea__label {
+  color: #424141;
+  font-size: 25px;
+  font-weight: 300;
+  left: 6px;
+  top: 0;
+  position: absolute;
+  transition: all 0.2s ease-in-out;
+  user-select: none;
+}
+.textarea__label_error {
+  color: red;
+}
+.textarea__textarea:focus + .textarea__label,
+.textarea__textarea_active + .textarea__label {
+  color: #606060;
+  cursor: text;
+  font-size: 20px;
+  top: calc(100% - 4px);
+  &.textarea__label_error {
+    color: red;
+  }
+}

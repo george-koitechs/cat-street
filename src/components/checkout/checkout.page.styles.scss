@@ -1,0 +1,26 @@
+@use '../../assets/styles/variables' as *;
+
+.checkoutPage {
+  padding: 35px 0;
+  background: radial-gradient(50% 50% at 50% 50%, rgba(241, 238, 233, 0.16) 0%, #f1eee9 100%);
+  min-height: 100vh;
+}
+.checkoutPage__link {
+  position: absolute;
+  top: 47px;
+  left: 54px;
+  display: block;
+  max-width: 181px;
+  width: 100%;
+  @media screen and (max-width: 768px) {
+    top: 15px;
+    left: 15px;
+    max-width: 90px;
+  }
+}
+.checkoutPage__title {
+  font-family: $Cooper;
+  font-weight: 300;
+  font-size: 60px;
+  text-align: center;
+}

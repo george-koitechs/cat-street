@@ -1,3 +1,5 @@
+import swell from 'swell-js'
+
 interface File {
   url: string
   width: number
@@ -8,12 +10,6 @@ interface File {
 interface Image {
   id: string
   file: File
-}
-
-interface Attributes {
-  by?: any
-  color?: any
-  size?: any
 }
 
 declare global {
@@ -30,8 +26,10 @@ declare global {
     price: number
     slug: string
     type: string
-    attributes: Attributes
+    // attributes: Attributes
     image: { id: string; publicURL: string }
+    options: swell.Product['options']
+    attributes: swell.Product['attributes']
   }
 }
 export {}

@@ -1,4 +1,13 @@
+@use '../assets/styles/variables' as *;
 @import '~modern-normalize/modern-normalize.css';
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  scrollbar-width: thin;
+}
 
 html,
 body {
@@ -9,6 +18,23 @@ body {
 
   color: var(--color-gray-900);
   font-family: 'Inter', sans-serif;
+}
+
+.container {
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+  max-width: $container-xl;
+  @media (max-width: $breakpoint-1200) {
+    width: $container-lg;
+  }
+  @media (max-width: $breakpoint-992) {
+    width: $container-md;
+  }
+  @media (max-width: $breakpoint-768) {
+    width: $container-sm;
+  }
 }
 
 :root {

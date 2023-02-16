@@ -19,8 +19,8 @@ const IndexPage: React.FC<PageProps<IProductsQuery>> = ({ data }) => {
         </h1>
         <div className={styles.productsList}>
           {data.allProduct.nodes.map((product) => {
-            const publicImg = product.image.publicURL
-            const image = product.images[0].file
+            const publicImg = product.images?.[0].file?.url
+            const image = product.images?.[0].file
             return (
               <Link to={`/products/${product.slug}`} key={product.id}>
                 <Card className={styles.card}>

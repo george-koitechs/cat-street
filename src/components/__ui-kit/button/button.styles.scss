@@ -1,0 +1,31 @@
+@use '../../../assets/styles/variables' as *;
+
+.button {
+  background: center / cover no-repeat url('../../../assets/images/button-contained.svg');
+  border: 0;
+  width: 100%;
+  color: $light;
+  font-size: 30px;
+  font-weight: 400;
+  cursor: pointer;
+  filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.25));
+  transition: 0.3s ease-in-out;
+  user-select: none;
+  &:hover {
+    filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.4));
+  }
+}
+.button_v1 {
+  background: center / contain no-repeat url('../../../assets/images/button-outlined.svg');
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 36px;
+  color: $dark;
+  width: 140px;
+}
+.button_v2 {
+  line-height: 55px;
+}
+.button_v3 {
+  line-height: 64px;
+}
