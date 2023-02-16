@@ -31,5 +31,12 @@ declare global {
     options: swell.Product['options']
     attributes: swell.Product['attributes']
   }
+  interface IOption {
+    id: string
+    name: string
+    value: string
+    valueId: string
+    variant: boolean
+  }
 }
 export {}

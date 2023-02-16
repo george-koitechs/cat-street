@@ -40,6 +40,14 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
       <img src={item.product.images?.[0]?.file?.url} alt={item.product.name} className='cartItem__image' />
       <div className='cartItem__content'>
         <h6 className='cartItem__name'>{item.product.name}</h6>
+        <div className='cartItem__options'>
+          {(item.options as IOption[])?.map((option) => (
+            <small>
+              <b>{option.name}: </b>
+              {option.value}
+            </small>
+          ))}
+        </div>
         <div className='cartItem__info'>
           <div className={classNames('cartItem__quantityBox', { cartItem__quantityBox_disabled: loading })}>
             <span
