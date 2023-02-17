@@ -8,6 +8,7 @@ import classNames from 'classnames'
 import swell from 'swell-js'
 import { shallow } from 'zustand/shallow'
 
+import { swellService } from '../../../services/swell.service'
 import { Button } from '../../__ui-kit/button/button.component'
 import { useCartStore } from '../cart.store'
 import { CartAd } from './cart-ad.component'
@@ -16,16 +17,12 @@ import { CartPromo } from './cart-promo.component'
 import { CartTotal } from './cart-total.component'
 import './cart.styles.scss'
 
-swell.init('koi-test', 'pk_YPIa1LSEvM56M8sH9VB3mMomCE92F4Yo', {
-  useCamelCase: true,
-}) // TODO replace
-
 export const Cart = () => {
   const location = useLocation()
   const isCheckoutPage = location.pathname === '/checkout'
   const [cartLoading, setCartLoading] = useState(false)
-  const [isOpened, close, cart, setCart] = useCartStore(
-    (state) => [state.isOpened, state.close, state.cart, state.setCart],
+  const [isOpened, close, cart, initCart] = useCartStore(
+    (state) => [state.isOpened, state.close, state.cart, state.initCart],
     shallow
   )
 
@@ -36,9 +33,9 @@ export const Cart = () => {
 
   async function getCart() {
     setCartLoading(true)
-    const cartData = await swell.cart.get()
+    const cartData = await swellService.getCart()
     setCartLoading(false)
-    if (cartData) setCart(cartData)
+    if (cartData) initCart(cartData)
   }
 
   useEffect(() => {
@@ -49,6 +46,7 @@ export const Cart = () => {
     <div className={classNames('cart', { cart_active: isOpened })}>
       <div className={classNames('cart__overlay', { cart__overlay_active: isOpened })} onClick={close}></div>
       <div className={classNames('cart__sidebar', { cart__sidebar_active: isOpened })}>
+        {/*<Button onClick={async () => await swell.cart.setItems([])}>Clear</Button>*/}
         <div className='cart__head'>
           <button className='cart__close' onClick={close}>
             <span></span>

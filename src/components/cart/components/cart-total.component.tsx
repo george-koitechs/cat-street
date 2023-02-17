@@ -3,15 +3,9 @@ import React from 'react'
 import classNames from 'classnames'
 import { shallow } from 'zustand/shallow'
 
+import { numberWithCommas } from '../../../helpers'
 import { useCartStore } from '../cart.store'
 import './cart-total.styles.scss'
-
-export function numberWithCommas(x: number) {
-  return x
-    .toFixed(2)
-    .toString()
-    .replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-}
 
 interface CartTotalProps extends React.HTMLProps<HTMLDivElement> {
   withMT?: boolean
@@ -19,8 +13,6 @@ interface CartTotalProps extends React.HTMLProps<HTMLDivElement> {
 
 export const CartTotal: React.FC<CartTotalProps> = (props) => {
   const [shippingCost, cart] = useCartStore((state) => [state.shippingCost, state.cart], shallow)
-
-  // const total = subtotal + parseInt(shippingCost ?? '0') - discount
 
   if (!cart || !cart.subTotal || !cart.grandTotal || cart.discountTotal === undefined) return null
 

@@ -1,21 +1,39 @@
-import swell from 'swell-js'
 import { create } from 'zustand'
 
-import { ICartItem } from './cart.types'
+import { swellService } from '../../services/swell.service'
+import { ICart, ISetCartOptions } from './cart.types'
 
 interface ICartState {
   isOpened: boolean
   open: () => void
   close: () => void
   setShippingCost: (shippingCost: string) => void
-  items: ICartItem[]
-  addItem: (item: ICartItem) => void
-  removeItem: (item: ICartItem) => void
   shippingCost: string | null
   discount: number
   setDiscount: (d: number) => void
-  cart: null | swell.Cart
-  setCart: (cart: swell.Cart) => void
+  cart: null | ICart
+  initCart: (cart: ICart | null) => void
+  updateCart: (options: ISetCartOptions) => void
+  increaseLocal: (itemId: string) => void
+  increase: (itemId: string, quantity: number) => void
+  decreaseLocal: (itemId: string) => void
+  decrease: (itemId: string, quantity: number) => void
+}
+
+function makeIntermediateCart(state: ICartState, itemId: string, action: 'increase' | 'decrease') {
+  return {
+    ...state.cart,
+    items: state.cart?.items?.map((el) => {
+      if (el.id === itemId) {
+        return {
+          ...el,
+          quantity: action === 'increase' ? ++el.quantity! : --el.quantity!,
+          price: el.price!,
+        }
+      }
+      return el
+    }),
+  } as ICart
 }
 
 export const useCartStore = create<ICartState>((set) => ({
@@ -27,26 +45,23 @@ export const useCartStore = create<ICartState>((set) => ({
   shippingCost: null,
   setShippingCost: (shippingCost) => set({ shippingCost }),
   cart: null,
-  setCart: (cart) => set({ cart }),
-  items: [],
-  addItem: (item) =>
-    set((state) => {
-      const isItemExist = !!state.items.find((el) => el.id === item.id)
-      return {
-        items: isItemExist
-          ? state.items.map((el) => (el.id === item.id ? { ...el, quantity: el.quantity + 1 } : el))
-          : [...state.items, item],
-      }
-    }),
-
-  removeItem: (item) =>
-    set((state) => {
-      const quantity = state.items.find((el) => el.id === item.id)?.quantity
-      const isLast = quantity === 1
-      return {
-        items: isLast
-          ? state.items.filter((el) => el.id !== item.id)
-          : state.items.map((el) => (el.id === item.id ? { ...el, quantity: el.quantity - 1 } : el)),
-      }
-    }),
+  initCart: (cart) => set({ cart }),
+  updateCart: async (options) => {
+    const cartData = await swellService.addItem(options)
+    set({ cart: cartData })
+  },
+  increaseLocal: async (itemId: string) => {
+    set((state) => ({ cart: makeIntermediateCart(state, itemId, 'increase') }))
+  },
+  increase: async (itemId: string, quantity: number) => {
+    const cartData = await swellService.increase(itemId, quantity)
+    set({ cart: cartData })
+  },
+  decreaseLocal: async (itemId: string) => {
+    set((state) => ({ cart: makeIntermediateCart(state, itemId, 'decrease') }))
+  },
+  decrease: async (itemId: string, quantity: number) => {
+    const cartData = await swellService.decrease(itemId, quantity)
+    set({ cart: cartData })
+  },
 }))

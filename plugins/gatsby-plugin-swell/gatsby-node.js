@@ -9,7 +9,7 @@ const PRODUCT_NODE_TYPE = 'Product'
 
 exports.sourceNodes = async ({ actions, createContentDigest }) => {
   const { createNode } = actions
-  const data = await store.get('/products')
+  const data = await store.get('/products', { where: { active: true } })
   console.log('data', data)
 
   data.results.forEach((product) => {

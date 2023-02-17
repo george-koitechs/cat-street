@@ -1,4 +1,4 @@
-import { PageProps, graphql } from 'gatsby'
+import { PageProps, graphql, navigate } from 'gatsby'
 
 import { useReducer, useState } from 'react'
 
@@ -6,29 +6,30 @@ import { Button } from '@mui/material'
 import { motion } from 'framer-motion'
 import { BsCartPlus } from 'react-icons/bs'
 import { MdSell } from 'react-icons/md'
-import swell from 'swell-js'
 import { OptionValueSnake } from 'swell-js/types/product/snake'
 import { shallow } from 'zustand/shallow'
 
 import { Layout } from '../../components'
 import { useCartStore } from '../../components/cart/cart.store'
+import { ISelectedOption } from '../../components/cart/cart.types'
 import * as styles from './product.module.scss'
 
 function ProductPage({ data }: PageProps<{ product: IProduct }>) {
   const [index, changeIndex] = useReducer((c: number, offset: number) => (c + offset) % data.product.images.length, 0)
-  const [openCart, setCart] = useCartStore((state) => [state.open, state.setCart], shallow)
-  const [selectedOption, setSelectedOption] = useState<null | { optionValue: OptionValueSnake; optionName: string }>(
-    null
-  )
+  const [openCart, updateCart] = useCartStore((state) => [state.open, state.updateCart], shallow)
+  const [selectedOption, setSelectedOption] = useState<null | ISelectedOption>(null)
 
+  async function addToCartCommon() {
+    if (!selectedOption) return
+    updateCart({ productId: data.product.id, selectedOption })
+  }
   async function addToCart() {
-    const cartData = await swell.cart.addItem({
-      product_id: data.product.id,
-      quantity: 1,
-      options: [{ name: selectedOption?.optionName, value: selectedOption?.optionValue.name }],
-    })
-    setCart(cartData)
+    addToCartCommon()
     openCart()
+  }
+  async function buyNow() {
+    addToCartCommon()
+    navigate('/checkout')
   }
 
   function selectOption(optionValue: OptionValueSnake, optionName?: string) {
@@ -90,7 +91,7 @@ function ProductPage({ data }: PageProps<{ product: IProduct }>) {
             <Button
               startIcon={<MdSell />}
               variant='contained'
-              onClick={addToCart}
+              onClick={buyNow}
               disabled={!selectedOption || !data.product.options?.length}
             >
               Buy Now
