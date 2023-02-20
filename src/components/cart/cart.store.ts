@@ -18,6 +18,8 @@ interface ICartState {
   increase: (itemId: string, quantity: number) => void
   decreaseLocal: (itemId: string) => void
   decrease: (itemId: string, quantity: number) => void
+  applyCoupon: (couponCode: string) => void
+  removeCoupon: (couponCode: string) => void
 }
 
 function makeIntermediateCart(state: ICartState, itemId: string, action: 'increase' | 'decrease') {
@@ -62,6 +64,14 @@ export const useCartStore = create<ICartState>((set) => ({
   },
   decrease: async (itemId: string, quantity: number) => {
     const cartData = await swellService.decrease(itemId, quantity)
+    set({ cart: cartData })
+  },
+  applyCoupon: async (couponCode: string) => {
+    const cartData = await swellService.applyCoupon(couponCode)
+    set({ cart: cartData })
+  },
+  removeCoupon: async (couponCode: string) => {
+    const cartData = await swellService.removeCoupon(couponCode)
     set({ cart: cartData })
   },
 }))

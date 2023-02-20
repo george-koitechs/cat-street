@@ -46,7 +46,7 @@ export const Cart = () => {
     <div className={classNames('cart', { cart_active: isOpened })}>
       <div className={classNames('cart__overlay', { cart__overlay_active: isOpened })} onClick={close}></div>
       <div className={classNames('cart__sidebar', { cart__sidebar_active: isOpened })}>
-        {/*<Button onClick={async () => await swell.cart.setItems([])}>Clear</Button>*/}
+        <Button onClick={async () => await swell.cart.setItems([])}>Clear</Button>
         <div className='cart__head'>
           <button className='cart__close' onClick={close}>
             <span></span>

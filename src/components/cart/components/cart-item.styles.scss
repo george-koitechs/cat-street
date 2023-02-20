@@ -17,6 +17,9 @@
   font-weight: 300;
   font-size: 18px;
 }
+.cartItem__options {
+  display: grid;
+}
 .cartItem__info {
   display: flex;
   justify-content: space-between;

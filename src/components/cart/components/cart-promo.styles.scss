@@ -76,3 +76,7 @@
     transform: rotate(45deg);
   }
 }
+.cartPromo__tag_disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

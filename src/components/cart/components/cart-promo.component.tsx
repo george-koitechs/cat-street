@@ -1,18 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react'
 
+import classNames from 'classnames'
 import { shallow } from 'zustand/shallow'
 
-import { swellService } from '../../../services/swell.service'
 import { useCartStore } from '../cart.store'
+import { DiscountType, ICart, IMappedDiscount } from '../cart.types'
 import './cart-promo.styles.scss'
 
 export const CartPromo = () => {
-  const setDiscount = useCartStore((state) => state.setDiscount)
   const inputRef = useRef<HTMLInputElement>(null)
   const [isActive, setIsActive] = useState(false)
   const [tag, setTag] = useState('')
-  const [tags, setTags] = useState<string[] | undefined>(undefined)
-  const [cart] = useCartStore((state) => [state.cart], shallow)
+  const [tags, setTags] = useState<IMappedDiscount[] | undefined>(undefined)
+  const [cart, applyCoupon, removeCoupon] = useCartStore(
+    (state) => [state.cart, state.applyCoupon, state.removeCoupon],
+    shallow
+  )
 
   function handleTag(e: React.ChangeEvent<HTMLInputElement>) {
     setTag(e.target.value)
@@ -20,8 +23,7 @@ export const CartPromo = () => {
   async function addTag() {
     if (!tag) return
     try {
-      await swellService.applyCoupon(tag)
-      setTags((prev) => (!!prev ? [...prev, tag] : prev))
+      await applyCoupon(tag)
       setTag('')
     } catch (e) {
       alert('Coupon error!')
@@ -30,24 +32,37 @@ export const CartPromo = () => {
   function handleKeyUp(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter') addTag()
   }
-  function removeTag(tag: string) {
-    setTags((prev) => prev?.filter((el) => el !== tag))
+  async function removeTag(tag: string) {
+    try {
+      await removeCoupon(tag)
+    } catch (e) {}
   }
   function start() {
     setIsActive(true)
+  }
+  function mapDiscounts(cart: ICart) {
+    return cart.discounts?.map((d) => {
+      const [type, id] = d.type.split('-') as [DiscountType, string | undefined]
+      const promotion = cart.promotions?.results.find((promotion) => promotion.id === id)
+
+      return {
+        ...d,
+        exactType: type,
+        exactId: type === 'promo' ? id : cart.couponId,
+        name: type === 'promo' ? promotion?.name : cart.couponCode,
+      } as IMappedDiscount
+    })
   }
 
   useEffect(() => {
     if (isActive) inputRef.current?.focus()
   }, [isActive])
-  useEffect(() => {
-    // setDiscount(tags.length)
-  }, [tags])
+
   useEffect(() => {
     if (cart) {
-      const promotions = cart?.promotions?.results.map((el) => el.name)
-      setIsActive(!!promotions?.length)
-      setTags(promotions)
+      const discounts = mapDiscounts(cart)
+      setIsActive(!!discounts.length)
+      setTags(discounts)
     }
   }, [cart])
 
@@ -70,12 +85,19 @@ export const CartPromo = () => {
           </div>
           {!!tags?.length && (
             <div className='cartPromo__tags'>
-              {tags.map((tag) => (
-                <div key={tag} className='cartPromo__tag' onClick={() => removeTag(tag)}>
-                  {tag}
-                  <div>+</div>
-                </div>
-              ))}
+              {tags.map((tag) => {
+                const isPromo = tag.exactType === 'promo'
+                return (
+                  <div
+                    key={tag.id}
+                    className={classNames('cartPromo__tag', { cartPromo__tag_disabled: isPromo })}
+                    onClick={isPromo ? undefined : () => removeTag(tag.id)}
+                  >
+                    {tag.name}
+                    <div>+</div>
+                  </div>
+                )
+              })}
             </div>
           )}
         </>

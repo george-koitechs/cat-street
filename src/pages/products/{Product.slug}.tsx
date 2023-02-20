@@ -11,17 +11,17 @@ import { shallow } from 'zustand/shallow'
 
 import { Layout } from '../../components'
 import { useCartStore } from '../../components/cart/cart.store'
-import { ISelectedOption } from '../../components/cart/cart.types'
+import { ISelectedOptions } from '../../components/cart/cart.types'
 import * as styles from './product.module.scss'
 
 function ProductPage({ data }: PageProps<{ product: IProduct }>) {
   const [index, changeIndex] = useReducer((c: number, offset: number) => (c + offset) % data.product.images.length, 0)
   const [openCart, updateCart] = useCartStore((state) => [state.open, state.updateCart], shallow)
-  const [selectedOption, setSelectedOption] = useState<null | ISelectedOption>(null)
+  const [selectedOptions, setSelectedOptions] = useState<null | ISelectedOptions>(null)
 
   async function addToCartCommon() {
-    if (!selectedOption) return
-    updateCart({ productId: data.product.id, selectedOption })
+    if (!selectedOptions) return
+    updateCart({ productId: data.product.id, selectedOptions })
   }
   async function addToCart() {
     addToCartCommon()
@@ -32,12 +32,18 @@ function ProductPage({ data }: PageProps<{ product: IProduct }>) {
     navigate('/checkout')
   }
 
-  function selectOption(optionValue: OptionValueSnake, optionName?: string) {
-    if (!optionName) return
-    setSelectedOption({ optionValue, optionName })
+  function selectOption(optionValue: OptionValueSnake, optionId?: string) {
+    if (!optionId) return
+    setSelectedOptions((prev) => {
+      if (!prev) {
+        return { [optionId]: optionValue }
+      }
+      return { ...prev, [optionId]: optionValue }
+    })
   }
-
-  const finalPrice = data.product.price + (selectedOption?.optionValue.price ?? 0)
+  const optionValuesPrice = selectedOptions ? Object.values(selectedOptions).reduce((a, c) => a + (c.price ?? 0), 0) : 0
+  const finalPrice = data.product.price + optionValuesPrice
+  const canBuy = Object.keys(selectedOptions ?? {}).length === data.product.options?.length
 
   return (
     <Layout>
@@ -76,7 +82,7 @@ function ProductPage({ data }: PageProps<{ product: IProduct }>) {
                     return (
                       <Button
                         key={optionValue.id}
-                        variant={optionValue.id === selectedOption?.optionValue.id ? 'contained' : 'outlined'}
+                        variant={optionValue.id === selectedOptions?.[option.id!]?.id ? 'contained' : 'outlined'}
                         onClick={() => selectOption(optionValue, option.id)}
                       >
                         {optionValue.name} {!!optionValue.price && `(+${optionValue.price}${data.product.currency})`}
@@ -92,15 +98,11 @@ function ProductPage({ data }: PageProps<{ product: IProduct }>) {
               startIcon={<MdSell />}
               variant='contained'
               onClick={buyNow}
-              disabled={!selectedOption || !data.product.options?.length}
+              disabled={!canBuy || !data.product.options?.length}
             >
               Buy Now
             </Button>
-            <Button
-              startIcon={<BsCartPlus />}
-              onClick={addToCart}
-              disabled={!selectedOption || !data.product.options?.length}
-            >
+            <Button startIcon={<BsCartPlus />} onClick={addToCart} disabled={!canBuy || !data.product.options?.length}>
               Add to cart
             </Button>
           </div>

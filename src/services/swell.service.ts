@@ -11,10 +11,15 @@ async function getCart() {
 }
 
 async function addItem(options: ISetCartOptions) {
+  const requestOptions = Object.entries(options.selectedOptions).map(([optionId, optionValue]) => ({
+    name: optionId,
+    value: optionValue.name,
+  }))
+  console.log('requestOptions', requestOptions)
   return (await swell.cart.addItem({
     product_id: options.productId,
     quantity: 1,
-    options: [{ name: options.selectedOption?.optionName, value: options.selectedOption?.optionValue.name }],
+    options: requestOptions as [object],
   })) as ICart
 }
 
@@ -32,8 +37,8 @@ async function decrease(itemId: string, quantity: number) {
 async function applyCoupon(coupon: string) {
   return (await swell.cart.applyCoupon(coupon)) as ICart
 }
-async function removeCoupon() {
-  return (await swell.cart.removeCoupon('')) as ICart
+async function removeCoupon(coupon: string) {
+  return (await swell.cart.removeCoupon(coupon)) as ICart
 }
 
 export const swellService = { getCart, addItem, increase, decrease, applyCoupon, removeCoupon }
