@@ -15,21 +15,22 @@ interface ICartState {
   initCart: (cart: ICart | null) => void
   updateCart: (options: ISetCartOptions) => void
   increaseLocal: (itemId: string) => void
-  increase: (itemId: string, quantity: number) => void
-  decreaseLocal: (itemId: string) => void
-  decrease: (itemId: string, quantity: number) => void
+  increase: (itemId: string, newQuantity: number) => void
+  decreaseLocal: (itemId: string, isRemove?: boolean) => void
+  decrease: (itemId: string, newQuantity: number) => void
   applyCoupon: (couponCode: string) => void
   removeCoupon: (couponCode: string) => void
+  addToCartLocal: (cartShortInfo: any) => void
 }
 
-function makeIntermediateCart(state: ICartState, itemId: string, action: 'increase' | 'decrease') {
+function makeIntermediateCart(state: ICartState, itemId: string, action: 'increase' | 'decrease', isRemove?: boolean) {
   return {
     ...state.cart,
     items: state.cart?.items?.map((el) => {
       if (el.id === itemId) {
         return {
           ...el,
-          quantity: action === 'increase' ? ++el.quantity! : --el.quantity!,
+          quantity: isRemove ? 0 : action === 'increase' ? ++el.quantity! : --el.quantity!,
           price: el.price!,
         }
       }
@@ -48,6 +49,34 @@ export const useCartStore = create<ICartState>((set) => ({
   setShippingCost: (shippingCost) => set({ shippingCost }),
   cart: null,
   initCart: (cart) => set({ cart }),
+  addToCartLocal: (cartShortInfo) =>
+    set((state) => {
+      const cartItem = state.cart?.items?.find((el) => el.product_id === cartShortInfo.items[0].id)
+      console.log('cartItem', cartItem)
+      // if cart had product (FIXME change to variation)
+      if (!!cartItem) {
+        return {
+          cart: {
+            ...state.cart,
+            sub_total: state.cart?.sub_total + cartShortInfo.sub_total,
+            grand_total: state.cart?.grand_total + cartShortInfo.grand_total,
+            items: state.cart?.items?.map((el) => {
+              if (el.id === cartItem.id) {
+                return {
+                  ...el,
+                  quantity: ++el.quantity!,
+                  price: el.price!,
+                }
+              }
+              return el
+            }),
+          },
+        }
+      }
+
+      // if cart was empty
+      return { cart: cartShortInfo }
+    }),
   updateCart: async (options) => {
     const cartData = await swellService.addItem(options)
     set({ cart: cartData })
@@ -59,8 +88,8 @@ export const useCartStore = create<ICartState>((set) => ({
     const cartData = await swellService.increase(itemId, quantity)
     set({ cart: cartData })
   },
-  decreaseLocal: async (itemId: string) => {
-    set((state) => ({ cart: makeIntermediateCart(state, itemId, 'decrease') }))
+  decreaseLocal: async (itemId: string, isRemove?: boolean) => {
+    set((state) => ({ cart: makeIntermediateCart(state, itemId, 'decrease', isRemove) }))
   },
   decrease: async (itemId: string, quantity: number) => {
     const cartData = await swellService.decrease(itemId, quantity)

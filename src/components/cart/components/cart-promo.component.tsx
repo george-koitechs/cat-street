@@ -94,7 +94,7 @@ export const CartPromo = () => {
                     onClick={isPromo ? undefined : () => removeTag(tag.id)}
                   >
                     {tag.name}
-                    <div>+</div>
+                    {isPromo ? null : <div>+</div>}
                   </div>
                 )
               })}

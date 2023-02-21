@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
+import { brown } from '@mui/material/colors'
 import classNames from 'classnames'
 import swell from 'swell-js'
 import { shallow } from 'zustand/shallow'
@@ -21,13 +22,19 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
   const [finalQuantity, setFinalQuantity] = useState<null | number>(null)
   const debouncedQuantity = useDebounce(finalQuantity)
 
-  async function updateCart(action: 'add' | 'remove') {
+  async function updateCart(action: 'increase' | 'decrease' | 'remove') {
     if (!item.id || !item.quantity) return
+
+    if (action === 'remove') {
+      decreaseLocal(item.id, true)
+      return decrease(item.id, 0)
+    }
+
     setFinalQuantity((prev) => {
       const prevValue = prev ?? 0
-      return action === 'add' ? prevValue + 1 : prevValue - 1
+      return action === 'increase' ? prevValue + 1 : prevValue - 1
     })
-    action === 'add' ? increaseLocal(item.id) : decreaseLocal(item.id)
+    action === 'increase' ? increaseLocal(item.id) : decreaseLocal(item.id)
   }
 
   useEffect(() => {
@@ -44,6 +51,9 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
       <img src={item.product.images?.[0]?.file?.url} alt={item.product.name} className='cartItem__image' />
       <div className='cartItem__content'>
         <h6 className='cartItem__name'>{item.product.name}</h6>
+        <button className='cartItem__removeAll' onClick={() => updateCart('remove')}>
+          +
+        </button>
         <div className='cartItem__options'>
           {(item.options as IOption[])?.map((option) => (
             <small>
@@ -56,14 +66,14 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
           <div className={classNames('cartItem__quantityBox')}>
             <span
               className='cartItem__quantity cartItem__quantity_action cartItem__quantity_remove'
-              onClick={() => updateCart('remove')}
+              onClick={() => updateCart('decrease')}
             >
               -
             </span>
             <span className='cartItem__quantity'>{item.quantity}</span>
             <span
               className='cartItem__quantity cartItem__quantity_action cartItem__quantity_add'
-              onClick={() => updateCart('add')}
+              onClick={() => updateCart('increase')}
             >
               +
             </span>

@@ -14,13 +14,13 @@ interface CartTotalProps extends React.HTMLProps<HTMLDivElement> {
 export const CartTotal: React.FC<CartTotalProps> = (props) => {
   const [shippingCost, cart] = useCartStore((state) => [state.shippingCost, state.cart], shallow)
 
-  if (!cart || !cart.subTotal || !cart.grandTotal || cart.discountTotal === undefined) return null
+  if (!cart?.sub_total || cart.grand_total === undefined || cart.discount_total === undefined) return null
 
   return (
     <div className={classNames('cartTotal', props.className)}>
       <div className='cartTotal__row'>
         <p className='cartTotal__title'>Subtotal</p>
-        <p className='cartTotal__content'>${numberWithCommas(cart.subTotal)}</p>
+        <p className='cartTotal__content'>${numberWithCommas(cart.sub_total)}</p>
       </div>
 
       <div className='cartTotal__row'>
@@ -28,18 +28,18 @@ export const CartTotal: React.FC<CartTotalProps> = (props) => {
         <p className='cartTotal__content'>{shippingCost === null ? 'calculated next step' : `$${shippingCost}`}</p>
       </div>
 
-      {!!cart.discountTotal && (
+      {!!cart?.discount_total && (
         <div className='cartTotal__row'>
           <p className='cartTotal__title'>Discounts</p>
-          <p className='cartTotal__content'>-${numberWithCommas(cart.discountTotal)}</p>
+          <p className='cartTotal__content'>-${numberWithCommas(cart.discount_total)}</p>
         </div>
       )}
 
       <div className={classNames('cartTotal__row', { cartTotal__row_total: props.withMT })}>
         <p className='cartTotal__title cartTotal__title_big'>TOTAL</p>
         <p className='cartTotal__content'>
-          <span className='cartTotal__currency'>AUD</span>
-          <span className='cartTotal__total'>${numberWithCommas(cart.grandTotal)}</span>
+          <span className='cartTotal__currency'>{cart?.currency}</span>
+          <span className='cartTotal__total'>${numberWithCommas(cart.grand_total)}</span>
         </p>
       </div>
     </div>

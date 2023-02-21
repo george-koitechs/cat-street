@@ -11,6 +11,7 @@ import * as styles from './index.module.scss'
 type IProductsQuery = { allProduct: { nodes: IProduct[] } }
 
 const IndexPage: React.FC<PageProps<IProductsQuery>> = ({ data }) => {
+  console.log('data.allProduct.nodes', data.allProduct.nodes)
   return (
     <Layout>
       <main className={styles.main}>
@@ -68,6 +69,17 @@ export const query = graphql`
         }
         price
         slug
+        _locale {
+          de {
+            name
+          }
+          fr {
+            name
+          }
+          uk {
+            name
+          }
+        }
       }
     }
   }

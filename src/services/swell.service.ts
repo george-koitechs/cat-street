@@ -2,9 +2,7 @@ import swell from 'swell-js'
 
 import { ICart, ISetCartOptions } from '../components/cart/cart.types'
 
-swell.init('koi-test', 'pk_YPIa1LSEvM56M8sH9VB3mMomCE92F4Yo', {
-  useCamelCase: true,
-})
+swell.init('koi-test', 'pk_YPIa1LSEvM56M8sH9VB3mMomCE92F4Yo')
 
 async function getCart() {
   return (await swell.cart.get()) as ICart | null
@@ -15,7 +13,7 @@ async function addItem(options: ISetCartOptions) {
     name: optionId,
     value: optionValue.name,
   }))
-  console.log('requestOptions', requestOptions)
+
   return (await swell.cart.addItem({
     product_id: options.productId,
     quantity: 1,

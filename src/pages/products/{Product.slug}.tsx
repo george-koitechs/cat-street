@@ -16,7 +16,10 @@ import * as styles from './product.module.scss'
 
 function ProductPage({ data }: PageProps<{ product: IProduct }>) {
   const [index, changeIndex] = useReducer((c: number, offset: number) => (c + offset) % data.product.images.length, 0)
-  const [openCart, updateCart] = useCartStore((state) => [state.open, state.updateCart], shallow)
+  const [openCart, updateCart, addToCartLocal] = useCartStore(
+    (state) => [state.open, state.updateCart, state.addToCartLocal],
+    shallow
+  )
   const [selectedOptions, setSelectedOptions] = useState<null | ISelectedOptions>(null)
 
   async function addToCartCommon() {
@@ -24,6 +27,17 @@ function ProductPage({ data }: PageProps<{ product: IProduct }>) {
     updateCart({ productId: data.product.id, selectedOptions })
   }
   async function addToCart() {
+    if (!selectedOptions) return
+    const price = data.product.price + Object.values(selectedOptions).reduce((a, c) => a + (c.price ?? 0), 0)
+    const cartShortInfo = {
+      currency: 'AUD',
+      sub_total: price,
+      grand_total: price,
+      discount_total: 0,
+      items: [{ ...data.product, price, product: data.product, quantity: 1 }],
+      discounts: [],
+    }
+    // addToCartLocal(cartShortInfo)
     addToCartCommon()
     openCart()
   }

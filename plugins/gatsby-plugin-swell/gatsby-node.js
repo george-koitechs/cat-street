@@ -1,15 +1,17 @@
 const swell = require('swell-node')
 const { createRemoteFileNode } = require(`gatsby-source-filesystem`)
 
-const store = swell.createClient('koi-test', '83NMEz9DQ6tVzqv3hMHpRwtHwGYpQCdW', {
-  useCamelCase: true,
-})
+const store = swell.createClient('koi-test', '83NMEz9DQ6tVzqv3hMHpRwtHwGYpQCdW')
 
 const PRODUCT_NODE_TYPE = 'Product'
 
 exports.sourceNodes = async ({ actions, createContentDigest }) => {
   const { createNode } = actions
-  const data = await store.get('/products', { where: { active: true } })
+  const data = await store.get('/products', {
+    where: { active: true },
+    sort: 'date_created desc',
+    $locale: ['fr', 'de', 'uk'],
+  })
 
   data.results.forEach((product) => {
     return createNode({
