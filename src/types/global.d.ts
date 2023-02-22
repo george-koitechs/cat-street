@@ -16,6 +16,7 @@ declare global {
   interface IProduct {
     id: string
     date_created: Date
+    bundle: null | boolean
     currency: string
     active: boolean
     date_updated: Date
