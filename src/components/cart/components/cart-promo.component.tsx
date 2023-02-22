@@ -48,8 +48,8 @@ export const CartPromo = () => {
       return {
         ...d,
         exactType: type,
-        exactId: type === 'promo' ? id : cart.couponId,
-        name: type === 'promo' ? promotion?.name : cart.couponCode,
+        exactId: type === 'promo' ? id : cart.coupon_id,
+        name: type === 'promo' ? promotion?.name : cart.coupon_code,
       } as IMappedDiscount
     })
   }
@@ -61,7 +61,7 @@ export const CartPromo = () => {
   useEffect(() => {
     if (cart) {
       const discounts = mapDiscounts(cart)
-      setIsActive(!!discounts.length)
+      setIsActive(!!discounts?.length)
       setTags(discounts)
     }
   }, [cart])

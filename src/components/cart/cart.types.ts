@@ -5,7 +5,6 @@ export interface ISelectedOptions extends Record<string, OptionValueSnake> {}
 
 export interface ISetCartOptions {
   productId: string
-  selectedOptions: ISelectedOptions
 }
 
 export interface ICart extends Omit<swell.Cart, 'promotions' | 'discounts'> {

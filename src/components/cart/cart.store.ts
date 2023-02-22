@@ -1,3 +1,4 @@
+import { CartItemSnake } from 'swell-js/types/cart/snake'
 import { create } from 'zustand'
 
 import { swellService } from '../../services/swell.service'
@@ -9,8 +10,6 @@ interface ICartState {
   close: () => void
   setShippingCost: (shippingCost: string) => void
   shippingCost: string | null
-  discount: number
-  setDiscount: (d: number) => void
   cart: null | ICart
   initCart: (cart: ICart | null) => void
   updateCart: (options: ISetCartOptions) => void
@@ -43,17 +42,21 @@ export const useCartStore = create<ICartState>((set) => ({
   isOpened: false,
   open: () => set({ isOpened: true }),
   close: () => set({ isOpened: false }),
-  discount: 0,
-  setDiscount: (discount) => set({ discount: discount * 3.14 }),
   shippingCost: null,
   setShippingCost: (shippingCost) => set({ shippingCost }),
   cart: null,
   initCart: (cart) => set({ cart }),
   addToCartLocal: (cartShortInfo) =>
     set((state) => {
+      // if cart was empty
+      if (!state.cart) {
+        return { cart: cartShortInfo }
+      }
+
+      console.log('state.', state.cart)
       const cartItem = state.cart?.items?.find((el) => el.product_id === cartShortInfo.items[0].id)
-      console.log('cartItem', cartItem)
-      // if cart had product (FIXME change to variation)
+
+      // if cart had same product (FIXME change to variation)
       if (!!cartItem) {
         return {
           cart: {
@@ -74,8 +77,12 @@ export const useCartStore = create<ICartState>((set) => ({
         }
       }
 
-      // if cart was empty
-      return { cart: cartShortInfo }
+      return {
+        cart: {
+          ...state.cart,
+          items: [...Array.from(state.cart.items ?? []), cartShortInfo.items[0]],
+        },
+      }
     }),
   updateCart: async (options) => {
     const cartData = await swellService.addItem(options)

@@ -69,17 +69,6 @@ export const query = graphql`
         }
         price
         slug
-        _locale {
-          de {
-            name
-          }
-          fr {
-            name
-          }
-          uk {
-            name
-          }
-        }
       }
     }
   }

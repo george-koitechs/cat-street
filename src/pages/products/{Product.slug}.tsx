@@ -20,24 +20,20 @@ function ProductPage({ data }: PageProps<{ product: IProduct }>) {
     (state) => [state.open, state.updateCart, state.addToCartLocal],
     shallow
   )
-  const [selectedOptions, setSelectedOptions] = useState<null | ISelectedOptions>(null)
 
   async function addToCartCommon() {
-    if (!selectedOptions) return
-    updateCart({ productId: data.product.id, selectedOptions })
-  }
-  async function addToCart() {
-    if (!selectedOptions) return
-    const price = data.product.price + Object.values(selectedOptions).reduce((a, c) => a + (c.price ?? 0), 0)
     const cartShortInfo = {
       currency: 'AUD',
-      sub_total: price,
-      grand_total: price,
+      sub_total: data.product.price,
+      grand_total: data.product.price,
       discount_total: 0,
-      items: [{ ...data.product, price, product: data.product, quantity: 1 }],
+      items: [{ ...data.product, price: data.product.price, product: data.product, quantity: 1 }],
       discounts: [],
     }
-    // addToCartLocal(cartShortInfo)
+    addToCartLocal(cartShortInfo)
+    updateCart({ productId: data.product.id })
+  }
+  async function addToCart() {
     addToCartCommon()
     openCart()
   }
@@ -45,19 +41,6 @@ function ProductPage({ data }: PageProps<{ product: IProduct }>) {
     addToCartCommon()
     navigate('/checkout')
   }
-
-  function selectOption(optionValue: OptionValueSnake, optionId?: string) {
-    if (!optionId) return
-    setSelectedOptions((prev) => {
-      if (!prev) {
-        return { [optionId]: optionValue }
-      }
-      return { ...prev, [optionId]: optionValue }
-    })
-  }
-  const optionValuesPrice = selectedOptions ? Object.values(selectedOptions).reduce((a, c) => a + (c.price ?? 0), 0) : 0
-  const finalPrice = data.product.price + optionValuesPrice
-  const canBuy = Object.keys(selectedOptions ?? {}).length === data.product.options?.length
 
   return (
     <Layout>
@@ -84,39 +67,13 @@ function ProductPage({ data }: PageProps<{ product: IProduct }>) {
         </figure>
         <main>
           <h1 className={styles.title}>{data.product.name}</h1>
-          <div className={styles.price}>{finalPrice + data.product.currency}</div>
-
-          {data.product.options
-            ?.filter((o) => o.active)
-            .map((option) => {
-              return (
-                <div key={option.id} className={styles.productItem__option}>
-                  <p className={styles.productItem__optionName}>{option.name}:</p>
-                  {option.values?.map((optionValue) => {
-                    return (
-                      <Button
-                        key={optionValue.id}
-                        variant={optionValue.id === selectedOptions?.[option.id!]?.id ? 'contained' : 'outlined'}
-                        onClick={() => selectOption(optionValue, option.id)}
-                      >
-                        {optionValue.name} {!!optionValue.price && `(+${optionValue.price}${data.product.currency})`}
-                      </Button>
-                    )
-                  })}
-                </div>
-              )
-            })}
+          <div className={styles.price}>{data.product.price + data.product.currency}</div>
 
           <div className={styles.actions}>
-            <Button
-              startIcon={<MdSell />}
-              variant='contained'
-              onClick={buyNow}
-              disabled={!canBuy || !data.product.options?.length}
-            >
+            <Button startIcon={<MdSell />} variant='contained' onClick={buyNow}>
               Buy Now
             </Button>
-            <Button startIcon={<BsCartPlus />} onClick={addToCart} disabled={!canBuy || !data.product.options?.length}>
+            <Button startIcon={<BsCartPlus />} onClick={addToCart}>
               Add to cart
             </Button>
           </div>
@@ -140,24 +97,6 @@ export const query = graphql`
       delivery
       name
       description
-      attributes {
-        color
-        size
-      }
-      options {
-        active
-        attribute_id
-        id
-        input_type
-        name
-        required
-        variant
-        values {
-          id
-          name
-          price
-        }
-      }
       image {
         childImageSharp {
           gatsbyImageData(width: 350, formats: [AUTO, WEBP, AVIF])

@@ -2,22 +2,22 @@ import swell from 'swell-js'
 
 import { ICart, ISetCartOptions } from '../components/cart/cart.types'
 
-swell.init('koi-test', 'pk_YPIa1LSEvM56M8sH9VB3mMomCE92F4Yo')
+swell.init('csau', 'pk_5ocZPhVU8ddxjraDCMskKst124QEV5mZ')
 
 async function getCart() {
   return (await swell.cart.get()) as ICart | null
 }
 
 async function addItem(options: ISetCartOptions) {
-  const requestOptions = Object.entries(options.selectedOptions).map(([optionId, optionValue]) => ({
-    name: optionId,
-    value: optionValue.name,
-  }))
+  // const requestOptions = Object.entries(options.selectedOptions).map(([optionId, optionValue]) => ({
+  //   name: optionId,
+  //   value: optionValue.name,
+  // }))
 
   return (await swell.cart.addItem({
     product_id: options.productId,
     quantity: 1,
-    options: requestOptions as [object],
+    // options: requestOptions as [object],
   })) as ICart
 }
 
